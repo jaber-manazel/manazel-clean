@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,6 +9,7 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
+
 body{
 font-family:Arial;
 background:#f4f4f4;
@@ -15,35 +17,52 @@ display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
+margin:0;
 }
+
 .box{
 background:white;
 padding:30px;
-border-radius:10px;
+border-radius:12px;
 width:320px;
-box-shadow:0 0 10px rgba(0,0,0,.2);
+box-shadow:0 0 15px rgba(0,0,0,.15);
 }
+
 input,button{
 width:100%;
-padding:10px;
-margin:10px 0;
+padding:12px;
+margin-top:10px;
+box-sizing:border-box;
 }
+
+button{
+cursor:pointer;
+}
+
 #result{
 margin-top:15px;
 font-weight:bold;
 }
+
 </style>
+
 </head>
 
 <body>
 
 <div class="box">
+
 <h2>منازل الكرام</h2>
 
 <input id="email" placeholder="البريد الإلكتروني">
-<input id="password" type="password" placeholder="كلمة المرور">
 
-<button id="loginBtn">دخول</button>
+<input id="password"
+type="password"
+placeholder="كلمة المرور">
+
+<button id="loginBtn">
+دخول
+</button>
 
 <div id="result"></div>
 
@@ -51,33 +70,44 @@ font-weight:bold;
 
 <script>
 
-const supabase=window.supabase.createClient(
+const sb = supabase.createClient(
 'https://ozyxvgohggpzowatypxi.supabase.co',
 'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
-)
+);
 
-document.getElementById("loginBtn")
-.addEventListener("click",login)
+document
+.getElementById("loginBtn")
+.addEventListener("click",login);
 
 async function login(){
 
-let email=document.getElementById("email").value
-let password=document.getElementById("password").value
-let result=document.getElementById("result")
+const result=
+document.getElementById("result");
 
-result.innerHTML="جاري الدخول..."
+result.innerHTML="جاري الدخول...";
 
-const {data,error}=await supabase.auth.signInWithPassword({
-email,
-password
-})
+const email=
+document.getElementById("email").value;
+
+const password=
+document.getElementById("password").value;
+
+const {data,error}=await sb.auth.signInWithPassword({
+email:email,
+password:password
+});
 
 if(error){
-result.innerHTML=error.message
-return
+
+result.innerHTML=
+"❌ "+error.message;
+
+return;
+
 }
 
-result.innerHTML="تم تسجيل الدخول بنجاح ✅"
+result.innerHTML=
+"✅ تم تسجيل الدخول بنجاح";
 
 }
 
