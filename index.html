@@ -2,32 +2,90 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منازل الكرام - اختبار</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منازل الكرام - تسجيل الدخول</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 body{
 font-family:Arial;
+background:#f4f4f4;
 display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-background:#f5f5f5;
 }
 .box{
 background:white;
-padding:30px;
+padding:25px;
 border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,.1);
-text-align:center;
+width:300px;
+box-shadow:0 0 10px rgba(0,0,0,.1)
+}
+input,button{
+width:100%;
+padding:10px;
+margin:8px 0;
 }
 </style>
 </head>
+
 <body>
 
 <div class="box">
-<h1>منازل الكرام</h1>
-<p>إذا ظهرت هذه الصفحة فكل شيء شغال ✅</p>
+
+<h2>منازل الكرام</h2>
+
+<input id="email" placeholder="البريد">
+<input id="password" type="password" placeholder="كلمة المرور">
+
+<button onclick="login()">دخول</button>
+
+<div id="result"></div>
+
 </div>
+
+<script>
+
+const supabase=window.supabase.createClient(
+'https://ozyxvgohggpzowatypxi.supabase.co',
+'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
+)
+
+async function login(){
+
+let email=document.getElementById("email").value
+let password=document.getElementById("password").value
+
+const {data,error}=await supabase.auth.signInWithPassword({
+email,
+password
+})
+
+if(error){
+
+result.innerHTML=error.message
+return
+
+}
+
+const user=data.user
+
+const {data:profile}=await supabase
+.from('profiles')
+.select('*')
+.eq('id',user.id)
+.single()
+
+result.innerHTML=
+"تم الدخول بنجاح<br><br>"+
+profile.name+
+"<br>"+profile.role
+
+}
+
+</script>
 
 </body>
 </html>
