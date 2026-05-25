@@ -13,19 +13,20 @@
 body{
 font-family:Arial;
 background:#f4f4f4;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
 margin:0;
 }
 
-.box{
+.login-box{
 background:white;
 padding:30px;
 border-radius:12px;
 width:320px;
 box-shadow:0 0 15px rgba(0,0,0,.15);
+
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
 }
 
 input,button{
@@ -39,9 +40,16 @@ button{
 cursor:pointer;
 }
 
-#result{
+.dashboard{
+display:none;
+padding:30px;
+}
+
+.card{
+background:white;
+padding:20px;
 margin-top:15px;
-font-weight:bold;
+border-radius:10px;
 }
 
 </style>
@@ -50,11 +58,12 @@ font-weight:bold;
 
 <body>
 
-<div class="box">
+<div class="login-box" id="loginBox">
 
 <h2>منازل الكرام</h2>
 
-<input id="email" placeholder="البريد الإلكتروني">
+<input id="email"
+placeholder="البريد الإلكتروني">
 
 <input id="password"
 type="password"
@@ -68,9 +77,32 @@ placeholder="كلمة المرور">
 
 </div>
 
+
+<div class="dashboard" id="dashboard">
+
+<h1>
+لوحة نظام منازل الكرام
+</h1>
+
+<div class="card">
+مرحبا <span id="userEmail"></span>
+</div>
+
+<div class="card">
+الصلاحية:
+<span id="userRole"></span>
+</div>
+
+<button onclick="logout()">
+تسجيل خروج
+</button>
+
+</div>
+
+
 <script>
 
-const sb = supabase.createClient(
+const sb=supabase.createClient(
 'https://ozyxvgohggpzowatypxi.supabase.co',
 'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
 );
@@ -79,12 +111,8 @@ document
 .getElementById("loginBtn")
 .addEventListener("click",login);
 
+
 async function login(){
-
-const result=
-document.getElementById("result");
-
-result.innerHTML="جاري الدخول...";
 
 const email=
 document.getElementById("email").value;
@@ -92,9 +120,17 @@ document.getElementById("email").value;
 const password=
 document.getElementById("password").value;
 
-const {data,error}=await sb.auth.signInWithPassword({
-email:email,
-password:password
+const result=
+document.getElementById("result");
+
+result.innerHTML="جاري الدخول...";
+
+const {data,error}=
+await sb.auth.signInWithPassword({
+
+email,
+password
+
 });
 
 if(error){
@@ -106,8 +142,40 @@ return;
 
 }
 
-result.innerHTML=
-"✅ تم تسجيل الدخول بنجاح";
+
+const profile=
+await sb
+.from("profiles")
+.select("*")
+.eq("id",data.user.id)
+.single();
+
+document
+.getElementById("loginBox")
+.style.display="none";
+
+document
+.getElementById("dashboard")
+.style.display="block";
+
+document
+.getElementById("userEmail")
+.innerHTML=
+data.user.email;
+
+document
+.getElementById("userRole")
+.innerHTML=
+profile.data.role;
+
+}
+
+
+async function logout(){
+
+await sb.auth.signOut();
+
+location.reload();
 
 }
 
