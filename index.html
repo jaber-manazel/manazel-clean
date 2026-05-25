@@ -1,55 +1,64 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>منازل الكرام</title>
-
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نظام منازل الكرام</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:#f4f4f4;
 margin:0;
+font-family:Arial;
+background:#f4f6f9;
 }
 
-.login-box{
-background:white;
-padding:30px;
-border-radius:12px;
-width:320px;
-box-shadow:0 0 15px rgba(0,0,0,.15);
-
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
+.header{
+background:#0f172a;
+color:white;
+padding:20px;
 }
 
-input,button{
-width:100%;
-padding:12px;
-margin-top:10px;
-box-sizing:border-box;
+.container{
+padding:20px;
 }
 
-button{
-cursor:pointer;
-}
-
-.dashboard{
-display:none;
-padding:30px;
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
 }
 
 .card{
 background:white;
 padding:20px;
-margin-top:15px;
-border-radius:10px;
+border-radius:15px;
+box-shadow:0 2px 10px rgba(0,0,0,.1);
+}
+
+.sidebar{
+position:fixed;
+right:0;
+top:0;
+width:220px;
+height:100%;
+background:#1e293b;
+padding-top:30px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+padding:15px;
+text-decoration:none;
+}
+
+.sidebar a:hover{
+background:#334155;
+}
+
+.content{
+margin-right:240px;
 }
 
 </style>
@@ -58,128 +67,54 @@ border-radius:10px;
 
 <body>
 
-<div class="login-box" id="loginBox">
+<div class="sidebar">
 
-<h2>منازل الكرام</h2>
-
-<input id="email"
-placeholder="البريد الإلكتروني">
-
-<input id="password"
-type="password"
-placeholder="كلمة المرور">
-
-<button id="loginBtn">
-دخول
-</button>
-
-<div id="result"></div>
+<a href="#">الرئيسية</a>
+<a href="#">الحجوزات</a>
+<a href="#">الغرف</a>
+<a href="#">المستخدمون</a>
+<a href="#">التقارير</a>
 
 </div>
 
+<div class="content">
 
-<div class="dashboard" id="dashboard">
+<div class="header">
 
-<h1>
-لوحة نظام منازل الكرام
-</h1>
+<h1>نظام منازل الكرام</h1>
+<p>مرحباً Jaber Admin</p>
+
+</div>
+
+<div class="container">
+
+<div class="cards">
 
 <div class="card">
-مرحبا <span id="userEmail"></span>
+<h3>الغرف المشغولة</h3>
+<h1>182</h1>
 </div>
 
 <div class="card">
-الصلاحية:
-<span id="userRole"></span>
+<h3>الحجوزات</h3>
+<h1>254</h1>
 </div>
 
-<button onclick="logout()">
-تسجيل خروج
-</button>
+<div class="card">
+<h3>المستخدمون</h3>
+<h1>6</h1>
+</div>
+
+<div class="card">
+<h3>التقارير</h3>
+<h1>جاهزة</h1>
+</div>
 
 </div>
 
+</div>
 
-<script>
-
-const sb=supabase.createClient(
-'https://ozyxvgohggpzowatypxi.supabase.co',
-'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
-);
-
-document
-.getElementById("loginBtn")
-.addEventListener("click",login);
-
-
-async function login(){
-
-const email=
-document.getElementById("email").value;
-
-const password=
-document.getElementById("password").value;
-
-const result=
-document.getElementById("result");
-
-result.innerHTML="جاري الدخول...";
-
-const {data,error}=
-await sb.auth.signInWithPassword({
-
-email,
-password
-
-});
-
-if(error){
-
-result.innerHTML=
-"❌ "+error.message;
-
-return;
-
-}
-
-
-const profile=
-await sb
-.from("profiles")
-.select("*")
-.eq("id",data.user.id)
-.single();
-
-document
-.getElementById("loginBox")
-.style.display="none";
-
-document
-.getElementById("dashboard")
-.style.display="block";
-
-document
-.getElementById("userEmail")
-.innerHTML=
-data.user.email;
-
-document
-.getElementById("userRole")
-.innerHTML=
-profile.data.role;
-
-}
-
-
-async function logout(){
-
-await sb.auth.signOut();
-
-location.reload();
-
-}
-
-</script>
+</div>
 
 </body>
 </html>
