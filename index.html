@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>منازل الكرام - تسجيل الدخول</title>
+<title>منازل الكرام</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
 body{
@@ -18,15 +18,19 @@ height:100vh;
 }
 .box{
 background:white;
-padding:25px;
+padding:30px;
 border-radius:10px;
-width:300px;
-box-shadow:0 0 10px rgba(0,0,0,.1)
+width:320px;
+box-shadow:0 0 10px rgba(0,0,0,.2);
 }
 input,button{
 width:100%;
 padding:10px;
-margin:8px 0;
+margin:10px 0;
+}
+#result{
+margin-top:15px;
+font-weight:bold;
 }
 </style>
 </head>
@@ -34,13 +38,12 @@ margin:8px 0;
 <body>
 
 <div class="box">
-
 <h2>منازل الكرام</h2>
 
-<input id="email" placeholder="البريد">
+<input id="email" placeholder="البريد الإلكتروني">
 <input id="password" type="password" placeholder="كلمة المرور">
 
-<button onclick="login()">دخول</button>
+<button id="loginBtn">دخول</button>
 
 <div id="result"></div>
 
@@ -53,10 +56,16 @@ const supabase=window.supabase.createClient(
 'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
 )
 
+document.getElementById("loginBtn")
+.addEventListener("click",login)
+
 async function login(){
 
 let email=document.getElementById("email").value
 let password=document.getElementById("password").value
+let result=document.getElementById("result")
+
+result.innerHTML="جاري الدخول..."
 
 const {data,error}=await supabase.auth.signInWithPassword({
 email,
@@ -64,24 +73,11 @@ password
 })
 
 if(error){
-
 result.innerHTML=error.message
 return
-
 }
 
-const user=data.user
-
-const {data:profile}=await supabase
-.from('profiles')
-.select('*')
-.eq('id',user.id)
-.single()
-
-result.innerHTML=
-"تم الدخول بنجاح<br><br>"+
-profile.name+
-"<br>"+profile.role
+result.innerHTML="تم تسجيل الدخول بنجاح ✅"
 
 }
 
