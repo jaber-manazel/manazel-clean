@@ -2,256 +2,1020 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>منازل الكرام - نظام إدارة فندقي</title>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منازل الكرام - فندق أبراج نوازي</title>
 <style>
 :root{
---main:#0f766e;
---dark:#0f172a;
---bg:#f3f6fb;
---line:#dce3ea;
---green:#16a34a;
---red:#dc2626;
---blue:#2563eb;
+  --main:#0f766e;--main2:#064e3b;--dark:#0f172a;--red:#991b1b;--gold:#c89b3c;--bg:#f5f7fb;--line:#d7dee9;
+  --green:#16a34a;--danger:#dc2626;--blue:#2563eb;--amber:#f59e0b;--purple:#7c3aed;--muted:#64748b;
 }
-
-*{box-sizing:border-box;font-family:Tahoma}
-
-body{
-margin:0;
-background:var(--bg)
+*{box-sizing:border-box;font-family:Tahoma,Arial,sans-serif}
+body{margin:0;background:linear-gradient(180deg,#f8fafc,#edf2f7);color:#111827}
+header{background:linear-gradient(135deg,#064e3b,#0f172a);color:white;padding:18px 20px;display:flex;align-items:center;gap:16px;justify-content:center;text-align:center}
+.logo{width:78px;height:78px;border-radius:18px;background:white;object-fit:contain;padding:6px;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+header h1{margin:0;font-size:28px} header p{margin:6px 0 0;color:#fde68a;font-weight:bold}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;box-shadow:0 4px 12px rgba(15,23,42,.06)}
+button{border:0;border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:bold}
+nav button{background:#edf7f5;color:#064e3b;border:1px solid #cde5df}
+nav button.active{background:var(--main);color:white}
+main{max-width:1400px;margin:auto;padding:16px}
+.screen{display:none}.screen.active{display:block}
+.card{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:15px;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+.card-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+label{font-size:13px;font-weight:bold;color:#334155}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;margin-top:5px;background:white}
+textarea{min-height:75px}
+.primary{background:var(--blue);color:white}.success{background:var(--green);color:white}.danger{background:var(--danger);color:white}
+.warning{background:var(--amber);color:white}.purple{background:var(--purple);color:white}.muted{background:#e2e8f0;color:#0f172a}.mainbtn{background:var(--main);color:white}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:15px}
+.kpi{border-radius:18px;padding:17px;color:white;font-weight:bold;box-shadow:0 8px 18px rgba(15,23,42,.12)}
+.kpi b{display:block;font-size:29px;margin-top:8px}.kpi small{display:block;opacity:.9;margin-top:5px}
+.kpi.green{background:var(--green)}.kpi.red{background:var(--danger)}.kpi.amber{background:var(--amber)}.kpi.blue{background:var(--blue)}.kpi.purple{background:var(--purple)}.kpi.dark{background:var(--dark)}.kpi.main{background:var(--main)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:10px 0}
+.toolbar>*{min-width:165px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.legend span{padding:6px 10px;border-radius:999px;color:white;font-size:12px;font-weight:bold}
+.floor-head{background:#f8fafc;border:1px solid var(--line);padding:10px 12px;border-radius:12px;margin:14px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.room-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:9px}
+.room{min-height:84px;border-radius:15px;color:#fff;padding:8px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:4px;box-shadow:0 6px 14px rgba(15,23,42,.16);cursor:pointer;transition:.15s}
+.room:hover{transform:translateY(-2px);filter:brightness(1.04)}
+.room .num{font-size:19px;font-weight:bold}.room .status{font-size:12px}.room .guest{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
+.available{background:var(--green)}.occupied{background:var(--danger)}.cleaning{background:var(--amber)}.maintenance{background:var(--blue)}.reserved{background:var(--purple)}
+table{width:100%;border-collapse:collapse;background:white;border-radius:14px;overflow:hidden}
+th,td{border:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
+th{background:linear-gradient(135deg,#064e3b,#0f172a);color:white}
+tr:nth-child(even) td{background:#f8fafc}
+.actions{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.actions button{padding:7px 9px;font-size:12px}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;color:white;font-weight:bold;font-size:12px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:15px}
+.modal-box{background:white;border-radius:18px;padding:18px;width:100%;max-width:720px;max-height:92vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+.close{background:#e2e8f0;color:#0f172a}
+.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.print-logo{width:80px;height:80px;object-fit:contain}
+.print-title{text-align:center;margin-bottom:14px;display:none}
+.voucher-box{border:2px solid var(--main);border-radius:16px;padding:22px;background:#fff;line-height:1.9}
+.voucher-box h2,.voucher-box h3{text-align:center;margin:5px 0}
+.company-line{font-size:13px;color:#475569}
+@media(max-width:650px){
+  header{flex-direction:column} header h1{font-size:22px}
+  nav{overflow:auto;flex-wrap:nowrap} nav button{white-space:nowrap}
+  .room-map{grid-template-columns:repeat(auto-fill,minmax(75px,1fr))}
+  .room{min-height:74px}
 }
-
-.login{
-position:fixed;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-background:linear-gradient(135deg,#064e3b,#0f172a);
-}
-
-.card{
-background:white;
-width:350px;
-padding:25px;
-border-radius:20px;
-box-shadow:0 20px 50px rgba(0,0,0,.2)
-}
-
-input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border:1px solid #ddd;
-border-radius:10px
-}
-
-button{
-width:100%;
-padding:12px;
-border:0;
-border-radius:10px;
-background:var(--main);
-color:white;
-font-weight:bold;
-cursor:pointer
-}
-
-.dashboard{
-display:none
-}
-
-.sidebar{
-position:fixed;
-right:0;
-top:0;
-height:100%;
-width:230px;
-background:var(--dark);
-padding:20px
-}
-
-.sidebar h2{
-color:white;
-text-align:center
-}
-
-.sidebar a{
-display:block;
-padding:12px;
-margin:8px 0;
-background:#1e293b;
-border-radius:10px;
-text-decoration:none;
-color:white
-}
-
-.content{
-margin-right:250px;
-padding:20px
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px
-}
-
-.kpi{
-background:white;
-padding:20px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.08)
-}
-
-.kpi h1{
-margin:0;
-color:var(--main)
+@media print{
+  body{background:white} header,nav,.no-print,.modal{display:none!important}
+  main{max-width:none;padding:0} .screen{display:none!important} .screen.active{display:block!important}
+  .card{box-shadow:none;border:0} .print-title{display:block} button{display:none!important}
+  th{background:#064e3b!important;color:white!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
-
 <body>
 
-<div class="login" id="loginBox">
+<header>
+  <img class="logo" src="data:image/jpeg;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC1aZidDcCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu0EFmNEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsGBbIAAAAAAAAAAAAAAA2wAtkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABdyALM6oAAAAAAAAAAAAAAAAALEam0q0DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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_9" />
+  <div>
+    <h1>منازل الكرام</h1>
+    <p>فندق أبراج نوازي</p>
+  </div>
+</header>
 
-<div class="card">
+<nav class="no-print">
+  <button class="active" onclick="showScreen('dashboard')">الرئيسية</button>
+  <button onclick="showScreen('rooms-screen')">مخطط الغرف</button>
+  <button onclick="showScreen('contracts-screen')">الحجوزات والعقود</button>
+  <button onclick="showScreen('cashbox-screen')">الصندوق المالي</button>
+  <button onclick="showScreen('settings-screen')">الإعدادات</button>
+</nav>
 
-<h2 align="center">
-منازل الكرام
-</h2>
+<main>
+  <div id="dashboard" class="screen active">
+    <div class="kpis">
+      <div class="kpi main">الإجمالي العام للغرف<b id="kpi-total">0</b></div>
+      <div class="kpi green">الغرف الشاغرة<b id="kpi-avail">0</b></div>
+      <div class="kpi red">الغرف المسكونة<b id="kpi-occ">0</b></div>
+      <div class="kpi purple">المحجوزة مؤكداً<b id="kpi-res">0</b></div>
+      <div class="kpi amber">تحت التنظيف<b id="kpi-clean">0</b></div>
+      <div class="kpi blue">تحت الصيانة<b id="kpi-maint">0</b></div>
+      <div class="kpi dark">الرصيد المالي بالحساب<b id="kpi-cash">0.00</b></div>
+    </div>
+    <div class="card">
+      <h3>مخطط نسب الإشغال السريع</h3>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <div>
+          <label>نسبة الإشغال الفعلية (المسكونة)</label>
+          <div style="background:#e2e8f0; border-radius:10px; height:24px; margin-top:5px; overflow:hidden; position:relative;">
+            <div id="bar-occ" style="background:var(--danger); height:100%; width:0%; transition:0.3s;"></div>
+            <span id="txt-occ" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#000; font-size:12px;">0%</span>
+          </div>
+        </div>
+        <div>
+          <label>نسبة الغرف المتاحة للبيع فوراً</label>
+          <div style="background:#e2e8f0; border-radius:10px; height:24px; margin-top:5px; overflow:hidden; position:relative;">
+            <div id="bar-avail" style="background:var(--green); height:100%; width:0%; transition:0.3s;"></div>
+            <span id="txt-avail" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#000; font-size:12px;">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<input id="email"
-placeholder="البريد">
+  <div id="rooms-screen" class="screen">
+    <div class="card">
+      <div class="card-title">
+        <h2>لوحة التحكم الرقمية ومخطط الفندق (بدون أرقام غرف)</h2>
+        <div class="legend no-print">
+          <span class="available">متاحة</span>
+          <span class="occupied">مسكونة</span>
+          <span class="reserved">محجوزة</span>
+          <span class="cleaning">تنظيف</span>
+          <span class="maintenance">صيانة</span>
+        </div>
+      </div>
+      <div class="toolbar no-print">
+        <div>
+          <label>تصفية بحالة الغرفة:</label>
+          <select id="filter-status" onchange="renderRoomMap()">
+            <option value="all">كل الحالات</option>
+            <option value="متاحة">متاحة</option>
+            <option value="مسكونة">مسكونة</option>
+            <option value="محجوزة">محجوزة مؤكداً</option>
+            <option value="تنظيف">تحت التنظيف</option>
+            <option value="صيانة">تحت الصيانة</option>
+          </select>
+        </div>
+        <div>
+          <label>البحث باسم النزيل:</label>
+          <input type="text" id="search-guest" placeholder="اكتب اسم النزيل..." oninput="renderRoomMap()">
+        </div>
+      </div>
+      <div id="floors-container"></div>
+    </div>
+  </div>
 
-<input id="password"
-type="password"
-placeholder="كلمة المرور">
+  <div id="contracts-screen" class="screen">
+    <div class="card">
+      <div class="card-title">
+        <h2>إدارة عقود التسكين والحجوزات</h2>
+        <button class="mainbtn no-print" onclick="openContractModal()">+ إضافة حجز / عقد جديد</button>
+      </div>
+      <div class="toolbar no-print">
+        <div>
+          <label>البحث الشامل:</label>
+          <input type="text" id="contract-search" placeholder="اسم، شركة، هاتف..." oninput="renderContracts()">
+        </div>
+      </div>
+      <div style="overflow-x:auto; margin-top:15px;">
+        <table id="contracts-table">
+          <thead>
+            <tr>
+              <th>رقم العقد</th>
+              <th>النزيل / الجهة</th>
+              <th>الشركة / البعثة</th>
+              <th>تاريخ الدخول</th>
+              <th>تاريخ الخروج</th>
+              <th>عدد الغرف</th>
+              <th>الحالة</th>
+              <th>المالية (مطلوب/مدفوع)</th>
+              <th class="no-print">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="contracts-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-<button onclick="login()">
-دخول
-</button>
+  <div id="cashbox-screen" class="screen">
+    <div class="card">
+      <div class="card-title">
+        <h2>حركة الصندوق المالي والوصولات</h2>
+        <div class="actions no-print">
+          <button class="success" onclick="openReceiptModal()">+ سند قبض (وارد)</button>
+          <button class="danger" onclick="openPaymentModal()">+ سند صرف (صادر)</button>
+        </div>
+      </div>
+      <div class="kpis" style="margin-top:15px;">
+        <div class="kpi green">إجمالي المقبوضات<b id="cash-in-total">0.00</b></div>
+        <div class="kpi red">إجمالي المصروفات<b id="cash-out-total">0.00</b></div>
+        <div class="kpi dark">الرصيد الفعلي الحالي<b id="cash-balance">0.00</b></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>النوع</th>
+              <th>رقم السند</th>
+              <th>الإسم / البيان</th>
+              <th>المبلغ القبض (+)</th>
+              <th>المبلغ الصرف (-)</th>
+              <th>الرصيد التراكمي</th>
+              <th>ملاحظات</th>
+              <th class="no-print">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="cashbox-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-<div id="result"></div>
+  <div id="settings-screen" class="screen">
+    <div class="card">
+      <h2>إعدادات النظام وهيكلة الغرف بالفندق</h2>
+      <p style="color:var(--muted); font-size:13px;">تتيح لك هذه الشاشة تهيئة الفندق بالكامل، وتحديد عدد الغرف في كل طابق بشكل مرن دون الارتباط بأرقام تسلسلية ثابتة.</p>
+      
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:15px;">
+        <div>
+          <label>اسم الفندق / المنشأة بالكامل:</label>
+          <input type="text" id="set-hotel-name" value="فندق أبراج نوازي">
+        </div>
+        <div>
+          <label>السطر الفرعي في الهيدر:</label>
+          <input type="text" id="set-hotel-sub" value="مجموعة منازل الكرام لخدمات الحجاج والمعتمرين">
+        </div>
+      </div>
 
+      <div style="margin-top:20px; border-top:1px solid var(--line); padding-top:15px;">
+        <h3>تخصيص الطوابق وعدد الغرف</h3>
+        <div class="grid" style="grid-template-columns:1fr 1fr 100px; align-items:end; gap:10px;">
+          <div>
+            <label>اسم الطابق (مثال: الطابق الأول، المتكرر، ميزانين):</label>
+            <input type="text" id="new-floor-name" placeholder="مثال: الطابق الأول">
+          </div>
+          <div>
+            <label>عدد الغرف المراد إنشاؤها في هذا الطابق:</label>
+            <input type="number" id="new-floor-count" placeholder="مثال: 25">
+          </div>
+          <button class="mainbtn" style="width:100%;" onclick="addNewFloorConfiguration()">+ إضافة</button>
+        </div>
+
+        <div style="overflow-x:auto; margin-top:15px;">
+          <table style="min-width:500px;">
+            <thead>
+              <tr>
+                <th>اسم الطابق التوضيحي</th>
+                <th>إجمالي الغرف المتاحة فيه</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="settings-floors-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--line);" class="actions">
+        <button class="success" onclick="saveGeneralSettings()">حفظ كافة التعديلات والإعدادات</button>
+        <button class="warning" onclick="exportBackupData()">تصدير نسخة احتياطية (JSON)</button>
+        <button class="purple" onclick="document.getElementById('import-file').click()">استيراد نسخة احتياطية</button>
+        <input type="file" id="import-file" style="display:none;" onchange="importBackupData(event)">
+        <button class="danger" onclick="resetSystemData()">صفر النظام بالكامل (مسح دائم)</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="contract-modal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="contract-modal-title">إنشاء عقد تسكين جديد</h3>
+      <button class="close" onclick="closeModal('contract-modal')">X</button>
+    </div>
+    <div class="grid">
+      <div>
+        <label>اسم النزيل / الجهة المستأجرة *</label>
+        <input type="text" id="c-name" required>
+      </div>
+      <div>
+        <label>الشركة / البعثة / الحملة</label>
+        <input type="text" id="c-company">
+      </div>
+      <div>
+        <label>رقم الهاتف / التواصل</label>
+        <input type="text" id="c-phone">
+      </div>
+      <div>
+        <label>رقم الهوية / جواز السفر</label>
+        <input type="text" id="c-nid">
+      </div>
+      <div>
+        <label>تاريخ وقت الدخول (Check-In) *</label>
+        <input type="date" id="c-date-in" required>
+      </div>
+      <div>
+        <label>تاريخ وقت الخروج (Check-Out) *</label>
+        <input type="date" id="c-date-out" required>
+      </div>
+      <div>
+        <label>إجمالي قيمة العقد المالية (ريال)</label>
+        <input type="number" id="c-total-amount" value="0" oninput="calculateContractRemaining()">
+      </div>
+      <div>
+        <label>المبلغ المدفوع كدفعة أولى (ريال)</label>
+        <input type="number" id="c-paid-amount" value="0" oninput="calculateContractRemaining()">
+      </div>
+      <div>
+        <label>المبلغ المتبقي تلقائياً (ريال)</label>
+        <input type="number" id="c-remain-amount" value="0" readonly style="background:#f1f5f9;">
+      </div>
+      <div>
+        <label>حالة العقد</label>
+        <select id="c-status">
+          <option value="مؤكد فعلي">مؤكد فعلي (نشط)</option>
+          <option value="حجز مؤقت">حجز مؤقت (غير مسكون)</option>
+          <option value="منتهي">منتهي ومغلق</option>
+          <option value="ملغي">ملغي</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <label>طريقة اختيار وتعيين الغرف (يمكنك حجز الغرف مباشرة بالضغط عليها من لوحة مخطط الغرف):</label>
+      <div id="contract-rooms-selected-badge-area" style="margin-top:6px; min-height:30px; padding:8px; border:1px dashed var(--line); border-radius:10px;">
+        لا توجد غرف مخصصة لهذا العقد حالياً.
+      </div>
+    </div>
+    <div>
+      <label>ملاحظات إضافية وشروط التسكين</label>
+      <textarea id="c-notes"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="success" id="btn-save-contract" onclick="saveContractSubmit()">حفظ وتثبيت العقد</button>
+      <button class="muted" onclick="closeModal('contract-modal')">إلغاء</button>
+    </div>
+  </div>
 </div>
 
+<div id="room-detail-modal" class="modal">
+  <div class="modal-box" style="max-width:550px;">
+    <div class="modal-head">
+      <h3>إدارة وتحديث حالة الغرفة البرمجية</h3>
+      <button class="close" onclick="closeModal('room-detail-modal')">X</button>
+    </div>
+    <p style="font-weight:bold; color:var(--main);" id="rd-title">غرفة رقم X - الطابق Y</p>
+    
+    <div style="margin-bottom:12px;">
+      <label>تغيير حالة الغرفة التشغيلية الحالية:</label>
+      <select id="rd-status" onchange="toggleRoomDetailStatusLogic()">
+        <option value="متاحة">متاحة - جاهزة للبيع</option>
+        <option value="مسكونة">مسكونة - نزيل فعلي</option>
+        <option value="محجوزة">محجوزة مؤكداً</option>
+        <option value="تنظيف">تحت التنظيف / التدبير المنزلي</option>
+        <option value="صيانة">تحت الصيانة الفنية</option>
+      </select>
+    </div>
+
+    <div id="rd-contract-area" style="display:none; border:1px solid var(--line); padding:12px; border-radius:12px; margin-bottom:12px; background:#f8fafc;">
+      <label>ربط هذه الغرفة بعقد تسكين قائم للنزلاء:</label>
+      <select id="rd-contract-id">
+        <option value="">-- اختر العقد لربط الغرفة وتسكينها --</option>
+      </select>
+      <p style="font-size:11px; color:var(--muted); margin:4px 0 0;">عند ربط الغرفة بعقد، سيظهر اسم النزيل تلقائياً على الغرفة في المخطط العام للفندق.</p>
+    </div>
+
+    <div>
+      <label>ملاحظات خاصة بالغرفة (مثال: بحاجة لتغيير لمبة، عطل بالتكييف)</label>
+      <textarea id="rd-notes"></textarea>
+    </div>
+
+    <div class="form-actions" style="margin-top:15px;">
+      <button class="success" onclick="saveRoomDetailSubmit()">حفظ التغييرات التشغيلية</button>
+      <button class="danger" onclick="removeRoomFromSystemConfiguration()">حذف هذه الغرفة نهائياً من الطابق</button>
+      <button class="muted" onclick="closeModal('room-detail-modal')">إغلاق</button>
+    </div>
+  </div>
 </div>
 
-
-<div class="dashboard"
-id="dashboard">
-
-<div class="sidebar">
-
-<h2>
-منازل الكرام
-</h2>
-
-<a href="#">الرئيسية</a>
-<a href="#">الحجوزات</a>
-<a href="#">الغرف</a>
-<a href="#">المستخدمون</a>
-<a href="#">التقارير</a>
-
-<a href="#"
-onclick="logout()">
-تسجيل خروج
-</a>
-
+<div id="receipt-modal" class="modal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-head">
+      <h3 id="receipt-title">إنشاء سند قبض مالي (وارد للمنشأة)</h3>
+      <button class="close" onclick="closeModal('receipt-modal')">X</button>
+    </div>
+    <div style="display:grid; gap:10px;">
+      <div>
+        <label>المبلغ المستلم (ريال سعودي) *</label>
+        <input type="number" id="r-amount" required>
+      </div>
+      <div>
+        <label>يصرف لأمر / استلمنا من السيد (الجهة) *</label>
+        <input type="text" id="r-name" required>
+      </div>
+      <div>
+        <label>ربط اختياري بعقد تسكين النزيل:</label>
+        <select id="r-contract-id">
+          <option value="">-- اختر العقد لإنقاص المتبقي منه تلقائياً --</option>
+        </select>
+      </div>
+      <div>
+        <label>وذلك مقابل بيان / خدمة:</label>
+        <input type="text" id="r-notes" placeholder="مثال: دفعة من حساب الإقامة، قيمة خدمات إضافية">
+      </div>
+      <div>
+        <label>تاريخ السند المعياري:</label>
+        <input type="date" id="r-date">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="success" id="btn-save-receipt" onclick="saveReceiptSubmit()">تأكيد وحفظ السند</button>
+      <button class="primary" id="btn-print-receipt" style="display:none;" onclick="printVoucher('receipt')">طباعة السند فورا</button>
+      <button class="muted" onclick="closeModal('receipt-modal')">إلغاء</button>
+    </div>
+  </div>
 </div>
 
-
-<div class="content">
-
-<h1>
-لوحة التحكم
-</h1>
-
-<div class="cards">
-
-<div class="kpi">
-الحجوزات
-<h1>254</h1>
+<div id="payment-modal" class="modal">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-head">
+      <h3 id="payment-title">إنشاء سند صرف مالي (صادر من المنشأة)</h3>
+      <button class="close" onclick="closeModal('payment-modal')">X</button>
+    </div>
+    <div style="display:grid; gap:10px;">
+      <div>
+        <label>المبلغ المدفوع (ريال سعودي) *</label>
+        <input type="number" id="p-amount" required>
+      </div>
+      <div>
+        <label>دفعنا إلى السيد / الجهة المستفيدة *</label>
+        <input type="text" id="p-name" required>
+      </div>
+      <div>
+        <label>بند ومجال الصرف الرئيسي:</label>
+        <select id="p-category">
+          <option value="مصاريف تشغيلية">مصاريف تشغيلية وصيانة</option>
+          <option value="إيجار منشأة / فنادق">إيجار منشأة وعقارات</option>
+          <option value="رواتب وأجور">رواتب وأجور الموظفين</option>
+          <option value="فواتير عامة">فواتير (كهرباء، مياه، إنترنت)</option>
+          <option value="أخرى">مصاريف أخرى متنوعة</option>
+        </select>
+      </div>
+      <div>
+        <label>وذلك مقابل بيان تفصيلي:</label>
+        <input type="text" id="p-notes" placeholder="مثال: شراء أدوات نظافة، صيانة مصاعد">
+      </div>
+      <div>
+        <label>تاريخ السند المعياري:</label>
+        <input type="date" id="p-date">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="danger" id="btn-save-payment" onclick="savePaymentSubmit()">تأكيد وصرف المبلغ</button>
+      <button class="primary" id="btn-print-payment" style="display:none;" onclick="printVoucher('payment')">طباعة السند فورا</button>
+      <button class="muted" onclick="closeModal('payment-modal')">إلغاء</button>
+    </div>
+  </div>
 </div>
 
-<div class="kpi">
-الغرف المشغولة
-<h1>182</h1>
-</div>
-
-<div class="kpi">
-المستخدمون
-<h1>6</h1>
-</div>
-
-<div class="kpi">
-التقارير
-<h1>جاهزة</h1>
-</div>
-
-</div>
-
-</div>
-
+<div id="print-area" class="screen">
+  <div class="voucher-box" id="voucher-print-content"></div>
 </div>
 
 <script>
+// الكيانات البرمجية وقاعدة البيانات المحلية الافتراضية
+let systemSettings = {
+  hotelName: "فندق أبراج نوازي",
+  hotelSub: "مجموعة منازل الكرام لخدمات الحجاج والمعتمرين"
+};
 
-const sb=supabase.createClient(
-'https://ozyxvgohggpzowatypxi.supabase.co',
-'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
-);
+let floors = [];
+let rooms = {};
+let contracts = [];
+let receipts = [];
+let payments = [];
 
-async function login(){
+let currentEditingContractId = null;
+let currentEditingRoomGlobalId = null;
+let currentEditingReceiptId = null;
+let currentEditingPaymentId = null;
 
-let email=
-document.getElementById("email").value;
+// التحميل والتشغيل الأولي عند فتح المتصفح
+window.onload = function() {
+  loadAllDataFromLocalStorage();
+  applySettingsUI();
+  renderAll();
+};
 
-let password=
-document.getElementById("password").value;
-
-let result=
-document.getElementById("result");
-
-result.innerHTML=
-"جاري الدخول...";
-
-const {data,error}=
-await sb.auth.signInWithPassword({
-email,
-password
-});
-
-if(error){
-
-result.innerHTML=
-error.message;
-
-return;
-
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  
+  const targetScreen = document.getElementById(screenId);
+  if(targetScreen) targetScreen.classList.add('active');
+  
+  // تفعيل زر النقل المناسب
+  const btn = Array.from(document.querySelectorAll('nav button')).find(b => b.getAttribute('onclick').includes(screenId));
+  if(btn) btn.classList.add('active');
 }
 
-loginBox.style.display=
-"none";
-
-dashboard.style.display=
-"block";
-
+function loadAllDataFromLocalStorage() {
+  if(localStorage.getItem('nawazi_settings')) {
+    systemSettings = JSON.parse(localStorage.getItem('nawazi_settings'));
+  }
+  if(localStorage.getItem('nawazi_floors')) {
+    floors = JSON.parse(localStorage.getItem('nawazi_floors'));
+  } else {
+    // بناء فندق افتراضي تجريبي عند أول تشغيل للنظام
+    floors = [
+      { id: "f1", name: "الطابق الأول (أ)", count: 12 },
+      { id: "f2", name: "الطابق الثاني (ب)", count: 15 },
+      { id: "f3", name: "الطابق الثالث (ج)", count: 10 }
+    ];
+  }
+  
+  if(localStorage.getItem('nawazi_rooms')) {
+    rooms = JSON.parse(localStorage.getItem('nawazi_rooms'));
+  } else {
+    // توليد الغرف الافتراضية برمجياً بناء على الطوابق المحددة
+    generateRoomsFromScratchConfig();
+  }
+  
+  if(localStorage.getItem('nawazi_contracts')) {
+    contracts = JSON.parse(localStorage.getItem('nawazi_contracts'));
+  }
+  if(localStorage.getItem('nawazi_receipts')) {
+    receipts = JSON.parse(localStorage.getItem('nawazi_receipts'));
+  }
+  if(localStorage.getItem('nawazi_payments')) {
+    payments = JSON.parse(localStorage.getItem('nawazi_payments'));
+  }
 }
 
-async function logout(){
-
-await sb.auth.signOut();
-
-location.reload();
-
+function saveAll() {
+  localStorage.setItem('nawazi_settings', JSON.stringify(systemSettings));
+  localStorage.setItem('nawazi_floors', JSON.stringify(floors));
+  localStorage.setItem('nawazi_rooms', JSON.stringify(rooms));
+  localStorage.setItem('nawazi_contracts', JSON.stringify(contracts));
+  localStorage.setItem('nawazi_receipts', JSON.stringify(receipts));
+  localStorage.setItem('nawazi_payments', JSON.stringify(payments));
 }
 
-</script>
+function generateRoomsFromScratchConfig() {
+  rooms = {};
+  floors.forEach(f => {
+    for(let i = 1; i <= f.count; i++) {
+      const roomId = `${f.id}_r${i}`;
+      rooms[roomId] = {
+        id: roomId,
+        floorId: f.id,
+        localIndex: i, 
+        status: "متاحة",
+        contractId: "",
+        notes: ""
+      };
+    }
+  });
+}
 
-</body>
-</html>
+function applySettingsUI() {
+  document.querySelector('header h1').innerText = systemSettings.hotelName;
+  document.querySelector('header p').innerText = systemSettings.hotelSub;
+  document.getElementById('set-hotel-name').value = systemSettings.hotelName;
+  document.getElementById('set-hotel-sub').value = systemSettings.hotelSub;
+}
+
+function renderAll() {
+  calculateKPIsAndDash();
+  renderRoomMap();
+  renderContracts();
+  renderCashbox();
+  renderSettingsFloorsTable();
+  updateContractDropdowns();
+}
+
+function calculateKPIsAndDash() {
+  let total = Object.keys(rooms).length;
+  let avail = 0, occ = 0, res = 0, clean = 0, maint = 0;
+  
+  Object.values(rooms).forEach(r => {
+    if(r.status === "متاحة") avail++;
+    else if(r.status === "مسكونة") occ++;
+    else if(r.status === "محجوزة") res++;
+    else if(r.status === "تنظيف") clean++;
+    else if(r.status === "صيانة") maint++;
+  });
+  
+  document.getElementById('kpi-total').innerText = total;
+  document.getElementById('kpi-avail').innerText = avail;
+  document.getElementById('kpi-occ').innerText = occ;
+  document.getElementById('kpi-res').innerText = res;
+  document.getElementById('kpi-clean').innerText = clean;
+  document.getElementById('kpi-maint').innerText = maint;
+  
+  // الحساب المالي المجمع للصندوق
+  let totalIn = receipts.reduce((sum, r) => sum + Number(r.amount || 0), 0);
+  let totalOut = payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+  let balance = totalIn - totalOut;
+  document.getElementById('kpi-cash').innerText = balance.toFixed(2) + " ريال";
+  
+  // نسب شريط التقدم بالداشبورد
+  let pctOcc = total > 0 ? ((occ / total) * 100).toFixed(1) : 0;
+  let pctAvail = total > 0 ? ((avail / total) * 100).toFixed(1) : 0;
+  
+  document.getElementById('bar-occ').style.width = pctOcc + "%";
+  document.getElementById('txt-occ').innerText = pctOcc + "%";
+  document.getElementById('bar-avail').style.width = pctAvail + "%";
+  document.getElementById('txt-avail').innerText = pctAvail + "%";
+}
+
+function renderRoomMap() {
+  const container = document.getElementById('floors-container');
+  container.innerHTML = "";
+  
+  const filterStatus = document.getElementById('filter-status').value;
+  const searchGuest = document.getElementById('search-guest').value.trim().toLowerCase();
+  
+  floors.forEach(f => {
+    const floorRooms = Object.values(rooms).filter(r => r.floorId === f.id);
+    
+    // تصفية الغرف برمجياً حسب مدخلات المستخدم بالبحث
+    let filteredRooms = floorRooms.filter(r => {
+      let matchesStatus = (filterStatus === "all" || r.status === filterStatus);
+      let matchesGuest = true;
+      
+      if(searchGuest) {
+        matchesGuest = false;
+        if(r.contractId) {
+          const c = contracts.find(con => con.id === r.contractId);
+          if(c && (c.name.toLowerCase().includes(searchGuest) || (c.company && c.company.toLowerCase().includes(searchGuest)))) {
+            matchesGuest = true;
+          }
+        }
+      }
+      return matchesStatus && matchesGuest;
+    });
+    
+    if(floorRooms.length === 0) return; // طابق فارغ لا يعرض
+    
+    const floorHead = document.createElement('div');
+    floorHead.className = "floor-head";
+    floorHead.innerHTML = `<h3>${f.name}</h3><small>يعرض ${filteredRooms.length} غرف من أصل ${floorRooms.length}</small>`;
+    container.appendChild(floorHead);
+    
+    const roomMap = document.createElement('div');
+    roomMap.className = "room-map";
+    
+    filteredRooms.forEach(r => {
+      let statusClass = "available";
+      if(r.status === "مسكونة") statusClass = "occupied";
+      else if(r.status === "محجوزة") statusClass = "reserved";
+      else if(r.status === "تنظيف") statusClass = "cleaning";
+      else if(r.status === "صيانة") statusClass = "maintenance";
+      
+      let guestName = "-";
+      if(r.contractId) {
+        const c = contracts.find(con => con.id === r.contractId);
+        if(c) guestName = c.name;
+      }
+      
+      const div = document.createElement('div');
+      div.className = `room ${statusClass}`;
+      div.setAttribute('onclick', `openRoomDetailModal('${r.id}')`);
+      div.innerHTML = `<span class="num">غ ${r.localIndex}</span>
+                       <span class="status">${r.status}</span>
+                       <span class="guest" title="${guestName}">${guestName}</span>`;
+      roomMap.appendChild(div);
+    });
+    
+    container.appendChild(roomMap);
+  });
+}
+
+function openRoomDetailModal(roomId) {
+  currentEditingRoomGlobalId = roomId;
+  const r = rooms[roomId];
+  if(!r) return;
+  
+  const f = floors.find(fl => fl.id === r.floorId);
+  document.getElementById('rd-title').innerText = `غرفة رقم المتسلسل (${r.localIndex}) - بالطابق: ${f ? f.name : ''}`;
+  document.getElementById('rd-status').value = r.status;
+  document.getElementById('rd-notes').value = r.notes || "";
+  
+  toggleRoomDetailStatusLogic();
+  document.getElementById('rd-contract-id').value = r.contractId || "";
+  
+  document.getElementById('room-detail-modal').style.display = "flex";
+}
+
+function toggleRoomDetailStatusLogic() {
+  const status = document.getElementById('rd-status').value;
+  const area = document.getElementById('rd-contract-area');
+  if(status === "مسكونة" || status === "محجوزة") {
+    area.style.display = "block";
+  } else {
+    area.style.display = "none";
+  }
+}
+
+function saveRoomDetailSubmit() {
+  if(!currentEditingRoomGlobalId) return;
+  const r = rooms[currentEditingRoomGlobalId];
+  
+  const oldStatus = r.status;
+  const newStatus = document.getElementById('rd-status').value;
+  const newContractId = document.getElementById('rd-contract-id').value;
+  
+  r.status = newStatus;
+  r.notes = document.getElementById('rd-notes').value;
+  
+  if(newStatus === "مسكونة" || newStatus === "محجوزة") {
+    r.contractId = newContractId;
+  } else {
+    r.contractId = ""; // تفريغ الغرفة من النزيل تلقائياً في حال إتاحتها أو تنظيفها
+  }
+  
+  saveAll();
+  renderAll();
+  closeModal('room-detail-modal');
+}
+
+function removeRoomFromSystemConfiguration() {
+  if(!currentEditingRoomGlobalId) return;
+  if(confirm('هل أنت متأكد تماماً من رغبتك في حذف هذه الغرفة من النظام البرمجي نهائياً؟')) {
+    delete rooms[currentEditingRoomGlobalId];
+    saveAll();
+    renderAll();
+    closeModal('room-detail-modal');
+  }
+}
+
+function renderContracts() {
+  const rows = document.getElementById('contracts-rows');
+  rows.innerHTML = "";
+  const query = document.getElementById('contract-search').value.trim().toLowerCase();
+  
+  let filtered = contracts.filter(c => {
+    return c.id.toLowerCase().includes(query) || 
+           c.name.toLowerCase().includes(query) || 
+           (c.company && c.company.toLowerCase().includes(query)) ||
+           (c.phone && c.phone.includes(query));
+  });
+  
+  filtered.forEach(c => {
+    // حساب الغرف التابعة للعقد حالياً
+    const contractRoomsCount = Object.values(rooms).filter(r => r.contractId === c.id).length;
+    
+    let badgeClass = "success";
+    if(c.status === "حجز مؤقت") badgeClass = "warning";
+    if(c.status === "منتهي") badgeClass = "muted";
+    if(c.status === "ملغي") badgeClass = "danger";
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><b>${c.id}</b></td>
+      <td>${c.name} <br><small style="color:var(--muted)">ت:${c.phone||'-'}</small></td>
+      <td>${c.company || '-'}</td>
+      <td>${c.dateIn}</td>
+      <td>${c.dateOut}</td>
+      <td><span class="badge primary">${contractRoomsCount} غرف</span></td>
+      <td><span class="badge ${badgeClass}">${c.status}</span></td>
+      <td>
+        <small>المطلوب: ${Number(c.totalAmount).toFixed(2)}</small><br>
+        <small style="color:var(--green)">المدفوع: ${Number(c.paidAmount).toFixed(2)}</small><br>
+        <small style="color:var(--red)">المتبقي: ${Number(c.remainAmount).toFixed(2)}</small>
+      </td>
+      <td class="no-print">
+        <div class="actions">
+          <button class="primary" onclick="openContractModal('${c.id}')">تعديل</button>
+          <button class="warning" onclick="quickAssignRoomsToContract('${c.id}')">تعيين غرف</button>
+          <button class="danger" onclick="deleteContract('${c.id}')">حذف</button>
+        </div>
+      </td>
+    `;
+    rows.appendChild(tr);
+  });
+}
+
+function openContractModal(contractId = null) {
+  currentEditingContractId = contractId;
+  
+  if(contractId) {
+    // حالة التعديل على عقد موجود
+    document.getElementById('contract-modal-title').innerText = "تعديل بيانات عقد التسكين والمالية";
+    const c = contracts.find(con => con.id === contractId);
+    
+    document.getElementById('c-name').value = c.name;
+    document.getElementById('c-company').value = c.company || "";
+    document.getElementById('c-phone').value = c.phone || "";
+    document.getElementById('c-nid').value = c.nid || "";
+    document.getElementById('c-date-in').value = c.dateIn;
+    document.getElementById('c-date-out').value = c.dateOut;
+    document.getElementById('c-total-amount').value = c.totalAmount;
+    document.getElementById('c-paid-amount').value = c.paidAmount;
+    document.getElementById('c-remain-amount').value = c.remainAmount;
+    document.getElementById('c-status').value = c.status;
+    document.getElementById('c-notes').value = c.notes || "";
+    
+    renderSelectedRoomsBadges(c.id);
+  } else {
+    // حجز جديد
+    document.getElementById('contract-modal-title').innerText = "إنشاء عقد تسكين جديد";
+    document.getElementById('c-name').value = "";
+    document.getElementById('c-company').value = "";
+    document.getElementById('c-phone').value = "";
+    document.getElementById('c-nid').value = "";
+    
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('c-date-in').value = today;
+    document.getElementById('c-date-out').value = today;
+    
+    document.getElementById('c-total-amount').value = 0;
+    document.getElementById('c-paid-amount').value = 0;
+    document.getElementById('c-remain-amount').value = 0;
+    document.getElementById('c-status').value = "مؤكد فعلي";
+    document.getElementById('c-notes').value = "";
+    
+    document.getElementById('contract-rooms-selected-badge-area').innerHTML = "سيتم تخصيص الغرف بعد حفظ العقد عبر لوحة التحكم السريعة.";
+  }
+  
+  document.getElementById('contract-modal').style.display = "flex";
+}
+
+function calculateContractRemaining() {
+  const total = Number(document.getElementById('c-total-amount').value || 0);
+  const paid = Number(document.getElementById('c-paid-amount').value || 0);
+  document.getElementById('c-remain-amount').value = (total - paid).toFixed(2);
+}
+
+function renderSelectedRoomsBadges(contractId) {
+  const area = document.getElementById('contract-rooms-selected-badge-area');
+  area.innerHTML = "";
+  
+  const connectedRooms = Object.values(rooms).filter(r => r.contractId === contractId);
+  if(connectedRooms.length === 0) {
+    area.innerHTML = "لا توجد غرف مخصصة لهذا العقد حالياً. اذهب لمخطط الغرف واضغط على أي غرفة لربطها.";
+    return;
+  }
+  
+  connectedRooms.forEach(r => {
+    const span = document.createElement('span');
+    span.className = "badge primary";
+    span.style.margin = "3px";
+    span.innerText = `غرفة ${r.localIndex}`;
+    area.appendChild(span);
+  });
+}
+
+function saveContractSubmit() {
+  const name = document.getElementById('c-name').value.trim();
+  if(!name) { alert('الرجاء إدخال اسم النزيل أو الجهة المستأجرة رئيسياً'); return; }
+  
+  const dateIn = document.getElementById('c-date-in').value;
+  const dateOut = document.getElementById('c-date-out').value;
+  const totalAmount = Number(document.getElementById('c-total-amount').value || 0);
+  const paidAmount = Number(document.getElementById('c-paid-amount').value || 0);
+  const remainAmount = totalAmount - paidAmount;
+  const status = document.getElementById('c-status').value;
+  
+  if(currentEditingContractId) {
+    // تحديث العقد المالي والبيانات
+    const c = contracts.find(con => con.id === currentEditingContractId);
+    c.name = name;
+    c.company = document.getElementById('c-company').value.trim();
+    c.phone = document.getElementById('c-phone').value.trim();
+    c.nid = document.getElementById('c-nid').value.trim();
+    c.dateIn = dateIn;
+    c.dateOut = dateOut;
+    c.totalAmount = totalAmount;
+    c.paidAmount = paidAmount;
+    c.remainAmount = remainAmount;
+    c.status = status;
+    c.notes = document.getElementById('c-notes').value;
+  } else {
+    // إضافة حجز جديد لقاعدة البيانات
+    const newId = "CNT-" + Math.floor(1000 + Math.random() * 9000);
+    contracts.push({
+      id: newId,
+      name,
+      company: document.getElementById('c-company').value.trim(),
+      phone = document.getElementById('c-phone').value.trim(),
+      nid: document.getElementById('c-nid').value.trim(),
+      dateIn, dateOut, totalAmount, paidAmount, remainAmount, status,
+      notes: document.getElementById('c-notes').value
+    });
+  }
+  
+  saveAll();
+  renderAll();
+  closeModal('contract-modal');
+}
+
+function quickAssignRoomsToContract(contractId) {
+  alert(`قم بالتوجه الآن إلى صفحة 'مخطط الغرف'، واضغط على الغرف المراد حجزها ثم اختر هذا العقد [${contractId}] لربطه بها تلقائياً.`);
+  showScreen('rooms-screen');
+}
+
+function deleteContract(id) {
+  if(confirm('هل تريد حذف هذا العقد نهائياً؟ سيتم إلغاء ربط الغرف التابعة له تلقائياً.')) {
+    // تحرير غرف الفندق المرتبطة بالعقد الملغي
+    Object.values(rooms).forEach(r => {
+      if(r.contractId === id) {
+        r.contractId = "";
+        r.status = "متاحة";
+      }
+    });
+    contracts = contracts.filter(c => c.id !== id);
+    saveAll();
+    renderAll();
+  }
+}
+
+function renderCashbox() {
+  const cashboxRows = document.getElementById('cashbox-rows');
+  cashboxRows.innerHTML = "";
+  
+  let allLogs = [];
+  receipts.forEach(r => {
+    allLogs.push({ date: r.date, type: 'قبض', id: r.id, name: r.name, credit: r.amount, debit: 0, notes: r.notes });
+  });
+  payments.forEach(p => {
+    allLogs.push({ date: p.date, type: 'صرف', id: p.id, name: p.name, credit: 0, debit: p.amount, notes: p.notes });
+  });
+  
+  // ترتيب السجلات المالية تصاعدياً حسب التاريخ والسند لضبط الرصيد التراكمي
+  allLogs.sort((a,b) => new Date(a.date) - new Date(b.date));
+  
+  let balance = 0;
+  let totalIn = 0;
+  let totalOut = 0;
+  
+  allLogs.forEach(e => {
+    balance += Number(e.credit||0) - Number(e.debit||0);
+    totalIn += Number(e.credit||0);
+    totalOut += Number(e.debit||0);
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${e.date || '-'}</td>
+      <td><span class="badge ${e.type==='قبض'?'success':'danger'}">${e.type}</span></td>
+      <td><b>${e.id}</b></td>
+      <td>${e.name}</td>
+      <td style="color:var(--green); font-weight:bold;">${e.credit > 0 ? Number(e.credit).toFixed(2) : '-'}</td>
+      <td style="color:var(--red); font-weight:bold;">${e.debit > 0 ? Number(e.debit).toFixed(2) : '-'}</td>
+      <td style="font-weight:bold;">${balance.toFixed(2)}</td>
+      <td>${e.notes || '-'}</td>
+      <td class="no-print">
+        <div class="actions">
+          ${e.type === 'قبض' ? 
+            `<button class="primary" onclick="openReceiptModal('${e.id}')">تعديل</button><button class="danger" onclick="deleteReceipt('${e.id}')">حذف</button>` : 
+            `<button class="primary" onclick="openPaymentModal('${e.id}')">تعديل</button><button class="danger" onclick="deletePayment('${e.id}')">حذف</button>`
+          }
+        </div>
+      </td>
+    `;
+    cashboxRows.appendChild(tr);
+  });
+  
+  document.getElementById('cash-in-total').innerText = totalIn.toFixed(2) + " ريال";
+  document.getElementById('cash-out-total').innerText = totalOut.toFixed(2) + " ريال";
+  document.getElementById('cash-balance').innerText = balance.toFixed(2) + " ريال";
+}
+
+function openReceiptModal(receiptId = null) {
+  currentEditingReceiptId = receiptId;
+  updateContractDropdowns();
+  
+  if(receiptId) {
+    document.getElementById('receipt-title').innerText = "تعديل سند القبض";
+    const r = receipts.find(rec => rec.id === receiptId);
+    document.getElementById('r-amount').value = r.amount;
+    document.getElementById('r-name').value = r.name;
+    document.getElementById('r-contract-id').value = r.contractId || "";
+    document.getElementById('r-notes').value = r.notes || "";
+    document.getElementById('r-date').value = r.date;
+    document.getElementById('btn-print-receipt').style.display = "inline-block";
+  } else {
+    document.getElementById('receipt-title').innerText = "إنشاء سند قبض مالي (وارد للمنشأة)";
+    document.getElementById('r-amount').value = "";
+    document.getElementById('r-name').value = "";
+    document.getElementById('r-contract-id').value = "";
+    document.getElementById('r-notes').value = "";
+    document.getElementById('r-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('btn-print-receipt').style.display = "none";
+  }
+  document.getElementById('receipt-modal').style.display = "flex";
+}
+
+function saveReceiptSubmit() {
+  const amount = Number(document.getElementById('r-amount').value || 0);
+  const name = document.getElementById('r-name').value.trim();
+  const contractId = document.getElementById('r-contract-id').value;
+  const notes = document.getElementById('r-notes').value.trim();
+  const date = document.getElementById('r-date').value;
+  
+  if(amount <= 0 || !name) { alert('الرجاء تعبئة الحقول المطلوبة والمبلغ بشكل صحيح.'); return; }
+  
+  if(currentEditingReceiptId) {
+    const r = receipts.find(rec => rec.id === currentEditingReceiptId);
+    // استرجاع المدفوع القديم أولاً للخصم وإعادة الاحتساب بدقة للعقد
+    adjustContractFinanceOnReceiptChange(r.contractId, -r.amount);
+    
+    r.amount = amount; r.name = name; r.contractId = contractId; r.notes = notes; r.date = date;
+    adjustContractFinanceOnReceiptChange(contractId, amount);
+  } else {
+    const newId = "REC-" + Math.floor(1000 + Math.random() * 9000);
+    receipts.push({ id: newId, amount, name, contractId, notes, date });
+    adjustContractFinanceOnReceiptChange(contractId, amount);
+    currentEditingReceiptId =
