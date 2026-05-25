@@ -2,72 +2,154 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>نظام منازل الكرام</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منازل الكرام - نظام إدارة فندقي</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
+:root{
+--main:#0f766e;
+--dark:#0f172a;
+--bg:#f3f6fb;
+--line:#dce3ea;
+--green:#16a34a;
+--red:#dc2626;
+--blue:#2563eb;
+}
+
+*{box-sizing:border-box;font-family:Tahoma}
 
 body{
 margin:0;
-font-family:Arial;
-background:#f4f6f9;
+background:var(--bg)
 }
 
-.header{
-background:#0f172a;
-color:white;
-padding:20px;
-}
-
-.container{
-padding:20px;
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px;
+.login{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#064e3b,#0f172a);
 }
 
 .card{
 background:white;
-padding:20px;
-border-radius:15px;
-box-shadow:0 2px 10px rgba(0,0,0,.1);
+width:350px;
+padding:25px;
+border-radius:20px;
+box-shadow:0 20px 50px rgba(0,0,0,.2)
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ddd;
+border-radius:10px
+}
+
+button{
+width:100%;
+padding:12px;
+border:0;
+border-radius:10px;
+background:var(--main);
+color:white;
+font-weight:bold;
+cursor:pointer
+}
+
+.dashboard{
+display:none
 }
 
 .sidebar{
 position:fixed;
 right:0;
 top:0;
-width:220px;
 height:100%;
-background:#1e293b;
-padding-top:30px;
+width:230px;
+background:var(--dark);
+padding:20px
+}
+
+.sidebar h2{
+color:white;
+text-align:center
 }
 
 .sidebar a{
 display:block;
-color:white;
-padding:15px;
+padding:12px;
+margin:8px 0;
+background:#1e293b;
+border-radius:10px;
 text-decoration:none;
-}
-
-.sidebar a:hover{
-background:#334155;
+color:white
 }
 
 .content{
-margin-right:240px;
+margin-right:250px;
+padding:20px
 }
 
-</style>
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px
+}
 
+.kpi{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.08)
+}
+
+.kpi h1{
+margin:0;
+color:var(--main)
+}
+</style>
 </head>
 
 <body>
 
+<div class="login" id="loginBox">
+
+<div class="card">
+
+<h2 align="center">
+منازل الكرام
+</h2>
+
+<input id="email"
+placeholder="البريد">
+
+<input id="password"
+type="password"
+placeholder="كلمة المرور">
+
+<button onclick="login()">
+دخول
+</button>
+
+<div id="result"></div>
+
+</div>
+
+</div>
+
+
+<div class="dashboard"
+id="dashboard">
+
 <div class="sidebar">
+
+<h2>
+منازل الكرام
+</h2>
 
 <a href="#">الرئيسية</a>
 <a href="#">الحجوزات</a>
@@ -75,38 +157,39 @@ margin-right:240px;
 <a href="#">المستخدمون</a>
 <a href="#">التقارير</a>
 
+<a href="#"
+onclick="logout()">
+تسجيل خروج
+</a>
+
 </div>
+
 
 <div class="content">
 
-<div class="header">
-
-<h1>نظام منازل الكرام</h1>
-<p>مرحباً Jaber Admin</p>
-
-</div>
-
-<div class="container">
+<h1>
+لوحة التحكم
+</h1>
 
 <div class="cards">
 
-<div class="card">
-<h3>الغرف المشغولة</h3>
-<h1>182</h1>
-</div>
-
-<div class="card">
-<h3>الحجوزات</h3>
+<div class="kpi">
+الحجوزات
 <h1>254</h1>
 </div>
 
-<div class="card">
-<h3>المستخدمون</h3>
+<div class="kpi">
+الغرف المشغولة
+<h1>182</h1>
+</div>
+
+<div class="kpi">
+المستخدمون
 <h1>6</h1>
 </div>
 
-<div class="card">
-<h3>التقارير</h3>
+<div class="kpi">
+التقارير
 <h1>جاهزة</h1>
 </div>
 
@@ -115,6 +198,60 @@ margin-right:240px;
 </div>
 
 </div>
+
+<script>
+
+const sb=supabase.createClient(
+'https://ozyxvgohggpzowatypxi.supabase.co',
+'sb_publishable_vYI4QILit4699jAmsZ-MbQ_-7KwSbMy'
+);
+
+async function login(){
+
+let email=
+document.getElementById("email").value;
+
+let password=
+document.getElementById("password").value;
+
+let result=
+document.getElementById("result");
+
+result.innerHTML=
+"جاري الدخول...";
+
+const {data,error}=
+await sb.auth.signInWithPassword({
+email,
+password
+});
+
+if(error){
+
+result.innerHTML=
+error.message;
+
+return;
+
+}
+
+loginBox.style.display=
+"none";
+
+dashboard.style.display=
+"block";
+
+}
+
+async function logout(){
+
+await sb.auth.signOut();
+
+location.reload();
+
+}
+
+</script>
 
 </body>
 </html>
